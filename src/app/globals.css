@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: hsl(157, 60%, 11%); /* Deep Botanical Green */
+  --color-primary-light: hsl(157, 50%, 18%);
+  --color-secondary: hsl(47, 30%, 94%); /* Warm Beige */
+  --color-bg-ivory: hsl(46, 33%, 97%); /* Soft Ivory */
+  --color-accent-gold: hsl(38, 48%, 62%); /* Premium Gold */
+  --color-accent-gold-dark: hsl(38, 50%, 45%);
+  --color-charcoal: hsl(160, 30%, 12%); /* Charcoal Text */
+  --color-muted-text: hsl(160, 12%, 42%);
+  --color-border-subtle: hsl(160, 15%, 88%);
+  
+  --font-serif: var(--font-cormorant), Cormorant Garamond, Georgia, serif;
+  --font-sans: var(--font-jakarta), Plus Jakarta Sans, Arial, sans-serif;
+}
+
+:root {
+  --background: #faf8f3; /* Soft Ivory */
+  --foreground: #09251a; /* Deep Botanical Green text */
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Smooth transition defaults */
+a, button, input, textarea, select {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Custom premium scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(46, 33%, 97%);
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(157, 25%, 82%);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(38, 48%, 62%);
+}
+
+/* Lenis integration styles */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis-smooth [data-lenis-prevent] {
+  overflow: clip;
+}
+
+.lenis-target {
+  scroll-behavior: auto !important;
+}

@@ -21,6 +21,13 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       infinite: false,
     });
 
+    // Disable browser scroll restoration and force scroll to top immediately on refresh
+    if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+    lenis.scrollTo(0, { immediate: true });
+
     // Sync ScrollTrigger with Lenis
     lenis.on("scroll", ScrollTrigger.update);
 

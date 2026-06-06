@@ -6,6 +6,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingActions from "@/components/FloatingActions";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -85,6 +86,7 @@ export default function RootLayout({
             </main>
             <Footer />
             <FloatingActions />
+            <ScrollToTop />
           </SmoothScroll>
         </CartProvider>
       </body>

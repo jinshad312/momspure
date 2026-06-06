@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ChevronDown, ArrowRight, MessageSquare } from "lucide-react";
+import { ChevronDown, ArrowRight, MessageSquare, Check } from "lucide-react";
 import Link from "next/link";
 
 export default function ScrollControlledVideo() {
@@ -14,8 +14,7 @@ export default function ScrollControlledVideo() {
   const text3Ref = useRef<HTMLDivElement>(null);
   const text4Ref = useRef<HTMLDivElement>(null);
   
-  const [isVideoReady, setIsVideoReady] = useState(false);
-  const [loadingProgress, setLoadingProgress] = useState(0);
+
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -25,17 +24,6 @@ export default function ScrollControlledVideo() {
     const container = containerRef.current;
 
     if (!video || !container) return;
-
-    // Simulate loading for smoother user entry
-    const loadInterval = setInterval(() => {
-      setLoadingProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(loadInterval);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 150);
 
     // Interaction listener to start video playback once
     let interactionTriggered = false;
@@ -67,10 +55,6 @@ export default function ScrollControlledVideo() {
     addInteractionListeners();
 
     const handleLoadedMetadata = () => {
-      clearInterval(loadInterval);
-      setLoadingProgress(100);
-      setIsVideoReady(true);
-      
       const duration = video.duration;
       if (!duration || isNaN(duration)) return;
 
@@ -90,18 +74,12 @@ export default function ScrollControlledVideo() {
       });
 
       // Independent, overlapping text layers fading and sliding over the background video
-      // Text block 1: Reveals from 0.05 to 0.15, fades out from 0.22 to 0.28
+      // Text block 1: Starts fully visible (opacity-100 on load), then fades out from 0.15 to 0.23
       mainTimeline
-        .fromTo(
-          text1Ref.current,
-          { opacity: 0, scale: 0.95, y: 30 },
-          { opacity: 1, scale: 1, y: 0, duration: 0.10, ease: "power2.out" },
-          0.05
-        )
         .to(
           text1Ref.current,
           { opacity: 0, scale: 1.03, y: -30, duration: 0.08, ease: "power2.in" },
-          0.22
+          0.15
         );
 
       // Text block 2: Reveals from 0.30 to 0.40, fades out from 0.47 to 0.53
@@ -155,7 +133,6 @@ export default function ScrollControlledVideo() {
     video.load();
 
     return () => {
-      clearInterval(loadInterval);
       video.removeEventListener("loadedmetadata", handleLoadedMetadata);
       removeInteractionListeners();
     };
@@ -166,24 +143,6 @@ export default function ScrollControlledVideo() {
       ref={containerRef} 
       className="relative w-full h-screen bg-primary overflow-hidden"
     >
-      {/* Loading Overlay */}
-      {!isVideoReady && (
-        <div className="absolute inset-0 bg-primary z-30 flex flex-col items-center justify-center text-secondary">
-          <span className="font-serif text-3xl font-light tracking-widest animate-pulse mb-6">
-            MOMS<span className="text-accent-gold font-bold">PURE</span>
-          </span>
-          <div className="w-48 h-[1px] bg-secondary/20 relative overflow-hidden">
-            <div 
-              className="absolute left-0 top-0 h-full bg-accent-gold transition-all duration-300"
-              style={{ width: `${loadingProgress}%` }}
-            />
-          </div>
-          <span className="font-sans text-[10px] text-secondary/50 uppercase tracking-widest mt-4">
-            Curating organic storytelling... {loadingProgress}%
-          </span>
-        </div>
-      )}
-
       {/* HTML5 Video Element */}
       <video
         ref={videoRef}
@@ -209,8 +168,44 @@ export default function ScrollControlledVideo() {
       {/* Storytelling Text Overlays */}
       <div className="absolute inset-0 flex items-center justify-center z-20 px-6 text-center pointer-events-none">
         
-        {/* Step 1: Pure ingredients */}
-        <div ref={text1Ref} className="absolute max-w-4xl opacity-0 flex flex-col items-center">
+        {/* Step 1: Welcome / Main Headline & CTAs (Opaque on mount) */}
+        <div ref={text1Ref} className="absolute max-w-4xl flex flex-col items-center">
+          <span className="font-sans text-xs text-accent-gold uppercase tracking-[0.3em] font-bold block mb-4 border border-accent-gold/25 px-5 py-2 rounded-full bg-primary/30 backdrop-blur-md">
+            Welcome to Purity
+          </span>
+          <h2 className="font-serif text-4xl sm:text-6xl lg:text-7xl text-secondary leading-tight font-semibold max-w-3xl mb-6">
+            Experience Momspure Organic Goodness
+          </h2>
+          <p className="font-sans text-sm sm:text-base text-secondary/85 max-w-2xl mb-10 leading-relaxed">
+            Wholesome sprouted mixes, traditional aromatic powders, and cold-pressed oils handcrafted in small batches to preserve ancestral nutrients—exactly like our mothers did.
+          </p>
+          <div className="pointer-events-auto flex flex-col sm:flex-row items-center gap-4">
+            <Link 
+              href="/products"
+              className="bg-accent-gold hover:bg-accent-gold-dark text-primary font-sans text-xs uppercase tracking-widest font-bold px-10 py-5 rounded-full shadow-2xl flex items-center space-x-2 transition-transform duration-200 active:scale-95 border border-accent-gold/10"
+            >
+              <span>Explore Products</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <a 
+              href="https://wa.me/919876543210?text=Hi%20Momspure%2C%20I%20would%20like%20to%20place%20an%20order."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-transparent hover:bg-secondary/10 text-secondary font-sans text-xs uppercase tracking-widest font-bold px-10 py-5 rounded-full border border-secondary/20 flex items-center space-x-2 transition-colors active:scale-95"
+            >
+              <MessageSquare className="w-4 h-4 text-accent-gold" />
+              <span>WhatsApp Concierge</span>
+            </a>
+          </div>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-secondary/70 font-sans text-[10px] sm:text-xs tracking-wider border-t border-secondary/10 pt-6">
+            <span className="flex items-center gap-2"><Check className="w-4.5 h-4.5 text-accent-gold" /> 100% Certified Organic</span>
+            <span className="flex items-center gap-2"><Check className="w-4.5 h-4.5 text-accent-gold" /> Sprouted for Nutrition</span>
+            <span className="flex items-center gap-2"><Check className="w-4.5 h-4.5 text-accent-gold" /> Zero Preservatives & MSG</span>
+          </div>
+        </div>
+
+        {/* Step 2: Pure ingredients (USP 1) */}
+        <div ref={text2Ref} className="absolute max-w-4xl opacity-0 flex flex-col items-center">
           <span className="font-sans text-xs text-accent-gold uppercase tracking-[0.3em] font-bold block mb-4 border border-accent-gold/20 px-4 py-1.5 rounded-full bg-primary/20 backdrop-blur-sm">
             Nature&apos;s Selection
           </span>
@@ -218,12 +213,12 @@ export default function ScrollControlledVideo() {
             100% Wholesome Ingredients, Crafted With Devotion
           </h2>
           <p className="font-sans text-sm sm:text-base text-secondary/70 max-w-xl leading-relaxed">
-            Hand-selected grains, cold-pressed oils, and traditional mixtures designed to preserve vital minerals.
+            Hand-selected grains, cold-pressed seeds, and traditional mixtures designed to retain vital vitamins and minerals.
           </p>
         </div>
 
-        {/* Step 2: Traditional Recipes */}
-        <div ref={text2Ref} className="absolute max-w-4xl opacity-0 flex flex-col items-center">
+        {/* Step 3: Traditional Recipes (USP 2) */}
+        <div ref={text3Ref} className="absolute max-w-4xl opacity-0 flex flex-col items-center">
           <span className="font-sans text-xs text-accent-gold uppercase tracking-[0.3em] font-bold block mb-4 border border-accent-gold/20 px-4 py-1.5 rounded-full bg-primary/20 backdrop-blur-sm">
             Pure Heritage
           </span>
@@ -231,33 +226,20 @@ export default function ScrollControlledVideo() {
             No Preservatives. Just Traditional Recipes.
           </h2>
           <p className="font-sans text-sm sm:text-base text-secondary/70 max-w-xl leading-relaxed">
-            Exactly like how our mothers ground it. No artificial shelf-stabilizers, added thickeners, or MSG.
+            Exactly like how our mothers ground it. No artificial shelf-stabilizers, added thickeners, colors, or MSG.
           </p>
         </div>
 
-        {/* Step 3: Natural benefits */}
-        <div ref={text3Ref} className="absolute max-w-4xl opacity-0 flex flex-col items-center">
+        {/* Step 4: Sprouted Grains (USP 3 & Final Call to Action) */}
+        <div ref={text4Ref} className="absolute max-w-4xl opacity-0 flex flex-col items-center">
           <span className="font-sans text-xs text-accent-gold uppercase tracking-[0.3em] font-bold block mb-4 border border-accent-gold/20 px-4 py-1.5 rounded-full bg-primary/20 backdrop-blur-sm">
             Bio-Available Strength
           </span>
           <h2 className="font-serif text-4xl sm:text-6xl text-secondary leading-tight font-medium max-w-3xl mb-4">
             Activated Sprouted Grains For Safe Digestion
           </h2>
-          <p className="font-sans text-sm sm:text-base text-secondary/70 max-w-xl leading-relaxed">
-            We soak and sprout our grains for 24-48 hours to release vitamins and ensure easy digestibility.
-          </p>
-        </div>
-
-        {/* Step 4: Final Call to Action */}
-        <div ref={text4Ref} className="absolute max-w-4xl opacity-0 flex flex-col items-center">
-          <span className="font-sans text-xs text-accent-gold uppercase tracking-[0.3em] font-bold block mb-4 border border-accent-gold/25 px-5 py-2 rounded-full bg-primary/30 backdrop-blur-md">
-            Welcome to Purity
-          </span>
-          <h2 className="font-serif text-4xl sm:text-6xl lg:text-7xl text-secondary leading-tight font-semibold max-w-3xl mb-6">
-            Experience Momspure Organic Goodness
-          </h2>
-          <p className="font-sans text-sm sm:text-base text-secondary/80 max-w-lg mb-10 leading-relaxed">
-            Premium unrefined oils, sprouted mixes, and traditional aromatic powders handcrafted for wholesome wellness.
+          <p className="font-sans text-sm sm:text-base text-secondary/70 max-w-xl mb-10 leading-relaxed">
+            We soak and sprout our grains for 24-48 hours to release vital enzymes, multiply active vitamins, and ensure easy digestibility.
           </p>
           <div className="pointer-events-auto flex flex-col sm:flex-row items-center gap-4">
             <Link 
